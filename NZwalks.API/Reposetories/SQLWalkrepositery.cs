@@ -21,13 +21,13 @@ namespace NZwalks.API.Reposetories
 
         public async Task<List<Walk>> GetALLAsync()
         {
-           return await _dbContext.Walks.ToListAsync();
+           return await _dbContext.Walks.Include(x=>x.Difficulty).Include(x=>x.Region).ToListAsync();
             
         }
 
         public async Task<Walk?> GetByIDAsync(Guid id)
         {
-          return  await _dbContext.Walks.FirstOrDefaultAsync(x => x.Id == id);
+          return  await _dbContext.Walks.Include(x => x.Difficulty).Include(x => x.Region).FirstOrDefaultAsync(x => x.Id == id);
 
         }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NZwalks.API.CustomActionFilters;
 using NZwalks.API.Data;
 using NZwalks.API.Models.Domain;
 using NZwalks.API.Models.Dtos;
@@ -60,15 +61,17 @@ namespace NZwalks.API.Controllers
         }
 
         [HttpPost]
+        [ValideteModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             var rezult = _mapper.Map<Region>(addRegionRequestDto);
             await regionRepository.CreateAsync(rezult);
 
-            return CreatedAtAction(nameof(GetById), new {id = rezult.Id }, rezult);
+            return CreatedAtAction(nameof(GetById), new { id = rezult.Id }, rezult);
         }
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValideteModel]
         public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateRegionRequestDto dto)
         {
             var RegiomDomain = new Region
@@ -78,15 +81,16 @@ namespace NZwalks.API.Controllers
                 ReoginImageURL = dto.ReoginImageURL,
             };
             RegiomDomain = await regionRepository.UpdateAsync(id, RegiomDomain);
-            if(RegiomDomain == null)
+            if (RegiomDomain == null)
             {
                 return NotFound();
             }
 
             var regionsDto = _mapper.Map<RegionDto>(RegiomDomain);
-            
+
 
             return Ok(regionsDto);
+
         }
         [HttpDelete]
         [Route("{id:Guid}")]
