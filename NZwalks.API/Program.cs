@@ -4,6 +4,7 @@ using NZwalks.API.Data;
 using NZwalks.API.Mapping;
 using NZwalks.API.Reposetories;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +18,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksaConnecti
 builder.Services.AddAutoMapper(typeof(NZWalkingMappingcs));
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepositorys>();
 builder.Services.AddScoped<IWalkReporitery, SQLWalkrepositery>();
+
 
 var app = builder.Build();
 

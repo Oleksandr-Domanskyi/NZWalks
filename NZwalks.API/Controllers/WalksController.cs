@@ -6,19 +6,22 @@ using NZwalks.API.Models.Domain;
 using NZwalks.API.Models.Dtos;
 using NZwalks.API.Reposetories;
 
+
+
 namespace NZwalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WalksController : ControllerBase
+    public class WalksController : ControllerBase 
     {
         private readonly IMapper mapper;
         private readonly IWalkReporitery walkReporitery;
+ 
 
         public WalksController(IMapper mapper, IWalkReporitery walkReporitery)
         {
             this.mapper = mapper;
-            this.walkReporitery = walkReporitery;
+            this.walkReporitery = walkReporitery;      
         }
         [HttpPost]
         [ValideteModel]
@@ -29,10 +32,14 @@ namespace NZwalks.API.Controllers
             return Ok(mapper.Map<WalksDto>(walkDomainModel));
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        //GET:/api/walks?filterOnQuery=Track&sortBy=Name&isAscending=true&pageNumber=1&pageSize=10
+        public async Task<IActionResult> GetAll([FromQuery] string? filterON, [FromQuery] string? filterQuery,
+            [FromQuery] string? sortBy, [FromQuery]bool? isAcending,
+            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize=1000)
         {
-           var walksDomainModel= await walkReporitery.GetALLAsync();
-            return Ok(mapper.Map<List<WalksDto>>(walksDomainModel));
+           var walksDomainModel= await walkReporitery.GetALLAsync(filterON, filterQuery, sortBy, 
+               isAcending ?? true, pageNumber, pageSize);
+           return Ok(mapper.Map<List<WalksDto>>(walksDomainModel));
         }
         [HttpGet]
         [Route("{id:guid}")]
