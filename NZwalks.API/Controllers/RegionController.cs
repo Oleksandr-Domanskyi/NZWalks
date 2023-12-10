@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NZwalks.API.Data;
 using NZwalks.API.Models.Domain;
 using NZwalks.API.Models.Dtos;
 using NZwalks.API.Models.Dtos.CreateRegionDto;
+using NZwalks.API.Reposetories;
 
 namespace NZwalks.API.Controllers
 {
@@ -14,19 +16,21 @@ namespace NZwalks.API.Controllers
     {
         private readonly NZWalksDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IRegionRepository regionRepository;
 
-        public RegionController(NZWalksDbContext dbContext, IMapper mapper)
+        public RegionController(NZWalksDbContext dbContext, IMapper mapper, IRegionRepository regionRepository)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            this.regionRepository = regionRepository;
         }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
            //Get Data From Database - Domain models
-           var regionsDomain = _dbContext.Regions.ToList();
+           var regionsDomain = await regionRepository.GetAllAsync();
             //Map Domain Models to DTOs
-            var regionsDto = new List<RegionDto>();
+           var regionsDto = new List<RegionDto>();
             foreach (var regionDomain in regionsDomain)
             {
                 regionsDto.Add(new RegionDto()
@@ -41,10 +45,10 @@ namespace NZwalks.API.Controllers
            return Ok(regionsDto);
         }
         [HttpGet("{id}")]
-        public IActionResult GetById(Guid id) 
+        public async Task<IActionResult> GetById(Guid id) 
         {
             //var region = _dbContext.Regions.Find(id);//tylko dla id
-            var regionDomain = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionDomain = await regionRepository.GetByIdAsync(id);
             if (regionDomain == null)
             {
                 return NotFound();
@@ -56,27 +60,28 @@ namespace NZwalks.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] AddRegionRequestDto addRegionRequestDto)
+        public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             var rezult = _mapper.Map<Region>(addRegionRequestDto);
-            _dbContext.Add(rezult);
-            _dbContext.SaveChanges();
+            await regionRepository.CreateAsync(rezult);
 
             return CreatedAtAction(nameof(GetById), new {id = rezult.Id }, rezult);
         }
         [HttpPut]
         [Route("{id:Guid}")]
-        public IActionResult Update([FromRoute]Guid id, [FromBody] UpdateRegionRequestDto dto)
+        public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateRegionRequestDto dto)
         {
-            var RegiomDomain = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var RegiomDomain = new Region
+            {
+                Code = dto.Code,
+                Name = dto.Name,
+                ReoginImageURL = dto.ReoginImageURL,
+            };
+            RegiomDomain = await regionRepository.UpdateAsync(id, RegiomDomain);
             if(RegiomDomain == null)
             {
                 return NotFound();
             }
-            RegiomDomain.Code = dto.Code;
-            RegiomDomain.Name = dto.Name;
-            RegiomDomain.ReoginImageURL = dto.ReoginImageURL;
-            _dbContext.SaveChanges();
 
             var regionsDto = _mapper.Map<RegionDto>(RegiomDomain);
             
@@ -85,15 +90,13 @@ namespace NZwalks.API.Controllers
         }
         [HttpDelete]
         [Route("{id:Guid}")]
-        public IActionResult Delete([FromRoute]Guid id)
+        public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
-            var RegiomDomain = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var RegiomDomain = await regionRepository.DeleteAsync(id);
             if (RegiomDomain == null)
             {
                 return NotFound();
             }
-            _dbContext.Regions.Remove(RegiomDomain);
-            _dbContext.SaveChanges();
 
             var regionsDto = _mapper.Map<RegionDto>(RegiomDomain);
 
