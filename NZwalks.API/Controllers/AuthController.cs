@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NZwalks.API.Models.Dtos;
+using NZwalks.API.Reposetories;
 
 namespace NZwalks.API.Controllers
 {
@@ -10,10 +11,12 @@ namespace NZwalks.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
+        private readonly ITokenRepositery tokenRepositery;
 
-        public AuthController(UserManager<IdentityUser> userManager)
+        public AuthController(UserManager<IdentityUser> userManager,ITokenRepositery tokenRepositery)
         {
             this.userManager = userManager;
+            this.tokenRepositery = tokenRepositery;
         }
         [HttpPost]
         [Route("Register")]
@@ -57,10 +60,21 @@ namespace NZwalks.API.Controllers
                 var checkPasswordRezult = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
                 if (checkPasswordRezult)
                 {
-                    //Create token
+                    //Get Roles for this user
+                    var roles = await userManager.GetRolesAsync(user);
 
+                    if (roles != null)
+                    {
+                        //Create token
+                        var jwtToken = tokenRepositery.CreatJWTToken(user,roles.ToList());
 
-                    return Ok();
+                        var response = new LoginResponseDto
+                        {
+                            JwtToken = jwtToken,
+                        };
+                        
+                        return Ok(response);
+                    }  
                 }
             }
             return BadRequest("Username or Password wrong");
