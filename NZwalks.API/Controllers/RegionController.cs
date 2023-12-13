@@ -75,7 +75,7 @@ namespace NZwalks.API.Controllers
 
         [HttpPost]
         [ValideteModel]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             var rezult = _mapper.Map<Region>(addRegionRequestDto);
@@ -86,7 +86,7 @@ namespace NZwalks.API.Controllers
         [HttpPut]
         [Route("{id:Guid}")]
         [ValideteModel]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute]Guid id, [FromBody] UpdateRegionRequestDto dto)
         {
             var RegiomDomain = new Region
@@ -109,7 +109,7 @@ namespace NZwalks.API.Controllers
         }
         [HttpDelete]
         [Route("{id:Guid}")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
             var RegiomDomain = await regionRepository.DeleteAsync(id);
