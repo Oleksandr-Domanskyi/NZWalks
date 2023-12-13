@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
+using NZwalks.API.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -114,10 +115,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//app.UseMiddleware<ExeptionHandlerMiddlware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+
 
 app.UseStaticFiles(new StaticFileOptions
 {

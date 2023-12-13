@@ -39,6 +39,9 @@ namespace NZwalks.API.Controllers
         {
            var walksDomainModel= await walkReporitery.GetALLAsync(filterON, filterQuery, sortBy, 
                isAcending ?? true, pageNumber, pageSize);
+
+            throw new Exception("this is a new exception");
+
            return Ok(mapper.Map<List<WalksDto>>(walksDomainModel));
         }
         [HttpGet]

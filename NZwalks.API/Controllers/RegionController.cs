@@ -15,7 +15,7 @@ namespace NZwalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class RegionController : ControllerBase
     {
         private readonly NZWalksDbContext _dbContext;
@@ -34,7 +34,7 @@ namespace NZwalks.API.Controllers
             this.logger = logger;
         }
         [HttpGet]
-        [Authorize(Roles = "Reader")]
+        //[Authorize(Roles = "Reader")]
         public async Task<IActionResult> GetAll()
         {
             logger.LogInformation("GetAll Action Method was invoked");
@@ -58,7 +58,7 @@ namespace NZwalks.API.Controllers
            return Ok(regionsDto);
         }
         [HttpGet("{id}")]
-        [Authorize(Roles = "Reader")]
+        //[Authorize(Roles = "Reader")]
         public async Task<IActionResult> GetById(Guid id) 
         {
             //var region = _dbContext.Regions.Find(id);//tylko dla id
