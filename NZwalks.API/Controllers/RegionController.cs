@@ -15,7 +15,7 @@ namespace NZwalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class RegionController : ControllerBase
     {
         private readonly NZWalksDbContext _dbContext;
@@ -58,7 +58,7 @@ namespace NZwalks.API.Controllers
            return Ok(regionsDto);
         }
         [HttpGet("{id}")]
-        //[Authorize(Roles = "Reader")]
+        [Authorize(Roles = "Reader")]
         public async Task<IActionResult> GetById(Guid id) 
         {
             //var region = _dbContext.Regions.Find(id);//tylko dla id
@@ -109,7 +109,7 @@ namespace NZwalks.API.Controllers
         }
         [HttpDelete]
         [Route("{id:Guid}")]
-        //[Authorize(Roles = "Writer")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
             var RegiomDomain = await regionRepository.DeleteAsync(id);
